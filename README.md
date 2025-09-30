@@ -54,7 +54,7 @@ An interactive web application that analyzes website SEO meta tags and provides 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/seo-analyzer.git
+git clone [https://github.com/nickfinch71/SEOChecker](https://github.com/nickfinch71/SEOChecker)
 cd seo-analyzer
 ```
 
