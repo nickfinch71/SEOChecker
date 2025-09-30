@@ -31,16 +31,12 @@ export default function UrlInput({ onAnalyze, isLoading = false }: UrlInputProps
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex gap-3 w-full">
-        <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <div className="flex-1 relative flex items-center">
+          <Search className="absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
           {showProtocolBadge && (
-            <Badge 
-              variant="secondary" 
-              className="absolute left-14 top-1/2 -translate-y-1/2 text-xs font-mono pointer-events-none z-10"
-              data-testid="badge-protocol"
-            >
+            <div className="absolute left-14 text-sm font-mono text-muted-foreground pointer-events-none z-10">
               https://
-            </Badge>
+            </div>
           )}
           <Input
             type="text"
