@@ -34,7 +34,7 @@ export default function UrlInput({ onAnalyze, isLoading = false }: UrlInputProps
         <div className="flex-1 relative flex items-center">
           <Search className="absolute left-4 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
           {showProtocolBadge && (
-            <div className="absolute left-14 text-sm font-mono text-muted-foreground pointer-events-none z-10">
+            <div className="absolute left-14 text-sm font-mono text-muted-foreground pointer-events-none z-10 hidden md:block">
               https://
             </div>
           )}
@@ -43,7 +43,7 @@ export default function UrlInput({ onAnalyze, isLoading = false }: UrlInputProps
             placeholder="example.com or https://example.com"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className={`text-lg h-14 bg-card border-card-border transition-all ${showProtocolBadge ? 'pl-36' : 'pl-12'}`}
+            className={`text-lg h-14 bg-card border-card-border transition-all pl-12 ${showProtocolBadge ? 'md:pl-36' : ''}`}
             disabled={isLoading}
             data-testid="input-url"
             required
