@@ -55,13 +55,15 @@ An interactive web application that analyzes website SEO meta tags and provides 
 1. Clone the repository:
 ```bash
 git clone https://github.com/nickfinch71/SEOChecker
-cd seo-analyzer
+cd SEOChecker
 ```
 
 2. Install dependencies:
 ```bash
 npm install
 ```
+
+**Note for Windows users**: The project uses `cross-env` to ensure npm scripts work correctly across all platforms (Windows, Mac, and Linux).
 
 3. Start the development server:
 ```bash
