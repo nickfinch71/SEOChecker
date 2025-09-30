@@ -36,7 +36,7 @@ export default function UrlInput({ onAnalyze, isLoading = false }: UrlInputProps
           {showProtocolBadge && (
             <Badge 
               variant="secondary" 
-              className="absolute left-12 top-1/2 -translate-y-1/2 ml-2 text-xs font-mono pointer-events-none"
+              className="absolute left-14 top-1/2 -translate-y-1/2 text-xs font-mono pointer-events-none z-10"
               data-testid="badge-protocol"
             >
               https://
@@ -47,7 +47,7 @@ export default function UrlInput({ onAnalyze, isLoading = false }: UrlInputProps
             placeholder="example.com or https://example.com"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className={`text-lg h-14 bg-card border-card-border ${showProtocolBadge ? 'pl-32' : 'pl-12'}`}
+            className={`text-lg h-14 bg-card border-card-border transition-all ${showProtocolBadge ? 'pl-36' : 'pl-12'}`}
             disabled={isLoading}
             data-testid="input-url"
             required
