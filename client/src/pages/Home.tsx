@@ -4,92 +4,42 @@ import ScoreDashboard from "@/components/ScoreDashboard";
 import GooglePreview from "@/components/GooglePreview";
 import SocialPreview from "@/components/SocialPreview";
 import TagAnalysis from "@/components/TagAnalysis";
-import type { SeoScore, SeoIssue } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import type { SeoScore, SeoIssue, SeoAnalysis } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Home() {
   const [analyzing, setAnalyzing] = useState(false);
-  const [hasAnalyzed, setHasAnalyzed] = useState(false);
+  const [analysis, setAnalysis] = useState<SeoAnalysis | null>(null);
+  const [score, setScore] = useState<SeoScore | null>(null);
+  const [issues, setIssues] = useState<SeoIssue[]>([]);
+  const { toast } = useToast();
 
-  // TODO: remove mock functionality - this will be replaced with real API calls
-  const mockScore: SeoScore = {
-    overall: 72,
-    categories: {
-      basic: 80,
-      openGraph: 65,
-      twitter: 60,
-      technical: 85,
-    },
-  };
-
-  const mockIssues: SeoIssue[] = [
-    {
-      type: 'success',
-      category: 'Basic Meta Tags',
-      message: 'Title tag is present and optimal length',
-      tag: '<title>SEO Best Practices Guide - Complete Tutorial 2024</title>',
-    },
-    {
-      type: 'warning',
-      category: 'Basic Meta Tags',
-      message: 'Meta description is slightly too long',
-      tag: '<meta name="description" content="Learn comprehensive SEO best practices...">',
-      recommendation: 'Keep meta descriptions between 120-160 characters for optimal display in search results.',
-    },
-    {
-      type: 'success',
-      category: 'Open Graph Tags',
-      message: 'og:title is present',
-      tag: '<meta property="og:title" content="SEO Best Practices Guide">',
-    },
-    {
-      type: 'success',
-      category: 'Open Graph Tags',
-      message: 'og:description is present',
-      tag: '<meta property="og:description" content="Complete guide to SEO...">',
-    },
-    {
-      type: 'error',
-      category: 'Open Graph Tags',
-      message: 'og:image is missing',
-      tag: '<meta property="og:image" content="https://example.com/image.jpg">',
-      recommendation: 'Add an Open Graph image with recommended dimensions of 1200x630px for optimal social media sharing.',
-    },
-    {
-      type: 'warning',
-      category: 'Twitter Cards',
-      message: 'twitter:card type not specified',
-      tag: '<meta name="twitter:card" content="summary_large_image">',
-      recommendation: 'Specify a Twitter card type. Use "summary_large_image" for articles and blog posts.',
-    },
-    {
-      type: 'info',
-      category: 'Twitter Cards',
-      message: 'Using fallback Open Graph tags for Twitter',
-      recommendation: 'While Twitter will use og: tags as fallback, adding dedicated twitter: tags provides better control.',
-    },
-    {
-      type: 'success',
-      category: 'Technical Tags',
-      message: 'Viewport meta tag is properly configured',
-      tag: '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    },
-    {
-      type: 'success',
-      category: 'Technical Tags',
-      message: 'Canonical URL is specified',
-      tag: '<link rel="canonical" href="https://example.com/seo-guide">',
-    },
-  ];
-
-  const handleAnalyze = (url: string) => {
-    console.log('Analyzing URL:', url);
+  const handleAnalyze = async (url: string) => {
     setAnalyzing(true);
     
-    // TODO: remove mock functionality - simulate API call
-    setTimeout(() => {
+    try {
+      const response = await apiRequest('POST', '/api/analyze', { url });
+      const result = await response.json();
+
+      setAnalysis(result.analysis);
+      setScore(result.score);
+      setIssues(result.issues);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "SEO meta tags have been analyzed successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : "Failed to analyze URL. Please try again.",
+        variant: "destructive",
+      });
+      console.error('Analysis error:', error);
+    } finally {
       setAnalyzing(false);
-      setHasAnalyzed(true);
-    }, 2000);
+    }
   };
 
   return (
@@ -117,34 +67,37 @@ export default function Home() {
           </div>
         )}
 
-        {hasAnalyzed && !analyzing && (
+        {analysis && score && !analyzing && (
           <div className="space-y-8">
-            <ScoreDashboard score={mockScore} />
+            <ScoreDashboard score={score} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-8">
                 <GooglePreview
-                  url="https://example.com/seo-best-practices"
-                  title="SEO Best Practices Guide - Complete Tutorial 2024"
-                  description="Learn comprehensive SEO best practices with our step-by-step guide. Includes practical tips for beginners and advanced techniques for experienced marketers."
+                  url={analysis.url}
+                  title={analysis.title}
+                  description={analysis.description}
                 />
                 
                 <SocialPreview
-                  url="https://example.com/seo-best-practices"
-                  ogTitle="SEO Best Practices Guide"
-                  ogDescription="Learn comprehensive SEO best practices with our step-by-step guide for 2024"
-                  ogImage="https://images.unsplash.com/photo-1432888622747-4eb9a8f2c293?w=1200&h=630&fit=crop"
+                  url={analysis.url}
+                  ogTitle={analysis.ogTitle}
+                  ogDescription={analysis.ogDescription}
+                  ogImage={analysis.ogImage}
+                  twitterTitle={analysis.twitterTitle}
+                  twitterDescription={analysis.twitterDescription}
+                  twitterImage={analysis.twitterImage}
                 />
               </div>
 
               <div>
-                <TagAnalysis issues={mockIssues} />
+                <TagAnalysis issues={issues} />
               </div>
             </div>
           </div>
         )}
 
-        {!hasAnalyzed && !analyzing && (
+        {!analysis && !analyzing && (
           <div className="text-center py-24">
             <div className="inline-block p-6 rounded-full bg-muted/50 mb-6">
               <svg
